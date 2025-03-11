@@ -12,7 +12,7 @@ const VerifyEmail = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
+    const queryParams = new URLSearchParams(window.location.search);
     const token = queryParams.get("token");
 
     if (!token) {
