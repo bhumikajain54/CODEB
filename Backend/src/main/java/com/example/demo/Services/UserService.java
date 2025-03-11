@@ -50,7 +50,7 @@ public class UserService {
         message.setTo(user.getEmail());
         message.setSubject("Email Verification");
         message.setText("Click the link to verify your email: " +
-                frontendUrl + "/verify?token=" + verificationToken);
+                frontendUrl + "api/auth/verify?token=" + verificationToken);
 
         mailSender.send(message);
     }
