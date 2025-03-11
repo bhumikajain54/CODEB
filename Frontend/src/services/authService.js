@@ -1,7 +1,5 @@
-// export const API_URL = "http://localhost:8080/api";
-
 // export const register = async (userData) => {
-//   const response = await fetch(`${API_URL}/auth/register`, {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
 //     method: "POST",
 //     headers: {
 //       "Content-Type": "application/json",
@@ -18,7 +16,7 @@
 // };
 
 // export const verifyEmail = async (token) => {
-//   const response = await fetch(`${API_URL}/auth/verify?token=${token}`, {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/verify?token=${token}`, {
 //     method: "GET",
 //   });
 
@@ -31,7 +29,7 @@
 // };
 
 // export const login = async (credentials) => {
-//   const response = await fetch(`${API_URL}/auth/login`, {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
 //     method: "POST",
 //     headers: {
 //       "Content-Type": "application/json",
@@ -55,7 +53,7 @@
 // };
 
 // export const forgotPassword = async (email) => {
-//   const response = await fetch(`${API_URL}/auth/forgot-password`, {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/forgot-password`, {
 //     method: "POST",
 //     headers: {
 //       "Content-Type": "application/json",
@@ -71,8 +69,21 @@
 //   return response.json();
 // };
 
+// export const validateResetToken = async (token) => {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/validate-reset-token?token=${token}`, {
+//     method: "GET",
+//   });
+
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     throw new Error(errorData.error || "Invalid or expired token");
+//   }
+
+//   return response.json();
+// };
+
 // export const resetPassword = async (token, newPassword) => {
-//   const response = await fetch(`${API_URL}/auth/reset-password`, {
+//   const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
 //     method: "POST",
 //     headers: {
 //       "Content-Type": "application/json",
@@ -113,9 +124,10 @@
 //   }
 //   return {};
 // };
+// src/services/authService.js
 
 export const register = async (userData) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -132,7 +144,7 @@ export const register = async (userData) => {
 };
 
 export const verifyEmail = async (token) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/verify?token=${token}`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/verify?token=${token}`, {
     method: "GET",
   });
 
@@ -145,7 +157,7 @@ export const verifyEmail = async (token) => {
 };
 
 export const login = async (credentials) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -169,7 +181,7 @@ export const login = async (credentials) => {
 };
 
 export const forgotPassword = async (email) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/forgot-password`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/forgot-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -186,7 +198,7 @@ export const forgotPassword = async (email) => {
 };
 
 export const validateResetToken = async (token) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/validate-reset-token?token=${token}`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/validate-reset-token?token=${token}`, {
     method: "GET",
   });
 
@@ -199,7 +211,7 @@ export const validateResetToken = async (token) => {
 };
 
 export const resetPassword = async (token, newPassword) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/reset-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
