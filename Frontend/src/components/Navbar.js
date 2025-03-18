@@ -121,11 +121,7 @@ const Navbar = () => {
         <div className={`navbar-links ${menuOpen ? 'show' : ''}`}>
           {currentUser ? (
             <>
-              {!isAdmin() && (
-                <Link to="/dashboard" className="nav-link" onClick={() => setMenuOpen(false)}>
-                  Dashboard
-                </Link>
-              )}
+              
               {isAdmin() && (
                 <Link to="/admin" className="nav-link" onClick={() => setMenuOpen(false)}>
                   Admin
