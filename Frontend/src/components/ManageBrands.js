@@ -2,6 +2,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./sidebar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExclamationCircle,
+  faCheckCircle,
+  faPlusCircle,
+  faEdit,
+  faTrashAlt,
+  faSave,
+  faTimes,
+  faSyncAlt,
+  faFolderOpen,
+  faCopyright
+} from "@fortawesome/free-solid-svg-icons";
 
 const ManageBrands = () => {
   const [brands, setBrands] = useState([]);
@@ -15,61 +28,27 @@ const ManageBrands = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [totalBrands, setTotalBrands] = useState(0);
-  const [totalChains, setTotalChains] = useState(0);
-  const [totalGroups, setTotalGroups] = useState(0);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showEditBrand, setShowEditBrand] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filterGroupId, setFilterGroupId] = useState("");
-  const [filterChainId, setFilterChainId] = useState("");
+  const [filterCompany, setFilterCompany] = useState("");
+  const [filterGroup, setFilterGroup] = useState("");
+
+  const API_URL = "http://localhost:8080/api";
 
   useEffect(() => {
-    fetchGroups();
-    fetchChains();
     fetchBrands();
+    fetchChains();
+    fetchGroups();
   }, []);
-
-  // Fetch All Groups for dropdown
-  const fetchGroups = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/groups");
-      const activeGroups = response.data.filter(group => group.active !== false);
-      setGroups(activeGroups);
-      setTotalGroups(activeGroups.length);
-    } catch (err) {
-      console.error("Error fetching groups:", err);
-      setError("Failed to load groups. Please try again.");
-    }
-  };
-
-   // Fetch All Chains
-   const fetchChains = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/chains");
-      const activeChains = response.data.filter(chain => chain.active !== false);
-      setChains(activeChains);
-      setTotalChains(activeChains.length);
-      console.log("Fetched chains:", response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching chains:", err);
-      setError("Failed to load chains. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   // Fetch All Brands
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/brands");
-      const activeBrands = response.data.filter(brand => brand.active !== false);
-      setBrands(activeBrands);
-      setTotalBrands(activeBrands.length);
-      console.log("Fetched brands:", response.data);
+      const response = await axios.get(`${API_URL}/brands`);
+      setBrands(response.data);
+      setTotalBrands(response.data.length);
       setError(null);
     } catch (err) {
       console.error("Error fetching brands:", err);
@@ -79,153 +58,186 @@ const ManageBrands = () => {
     }
   };
 
-  // Filter brands by group and/or chain
-  const filteredBrands = brands.filter(brand => {
-    const groupMatch = filterGroupId ? brand.chain.group.groupId.toString() === filterGroupId : true;
-    const chainMatch = filterChainId ? brand.chain.chainId.toString() === filterChainId : true;
-    return groupMatch && chainMatch;
-  });
+  // Fetch All Chains
+  const fetchChains = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/chains`);
+      setChains(response.data);
+    } catch (err) {
+      console.error("Error fetching chains:", err);
+    }
+  };
+
+  // Fetch All Groups
+  const fetchGroups = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/groups`);
+      setGroups(response.data);
+    } catch (err) {
+      console.error("Error fetching groups:", err);
+    }
+  };
 
   // Add a New Brand
   const handleAddBrand = async () => {
     if (!newBrandName.trim()) {
-      setError("Brand name cannot be empty");
+      setError("Brand name cannot be empty.");
       return;
     }
+
     if (!selectedChainId) {
-      setError("Please select a company");
+      setError("Please select a company.");
       return;
     }
 
     try {
-      const selectedChain = chains.find(c => c.chainId.toString() === selectedChainId);
-      
-      const response = await axios.post("http://localhost:8080/api/brands", {
+      setLoading(true);
+      const response = await axios.post(`${API_URL}/brands`, {
         brandName: newBrandName,
-        chain: selectedChain
+        chainId: selectedChainId
       });
 
-      console.log("Brand Added:", response.data);
+      setBrands([...brands, response.data]);
       setNewBrandName("");
       setSelectedChainId("");
       setError(null);
       setSuccess("Brand added successfully!");
       setShowAddBrand(false);
-      fetchBrands();
+      fetchBrands(); // Refresh the list to get accurate count
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      console.error("Error adding brand:", err.response?.data);
-      setError(err.response?.data || "Brand already exists!");
+    } catch (error) {
+      console.error("Error adding brand:", error);
+      setError(error.response?.data?.error || "Brand already exists for this company!");
+    } finally {
+      setLoading(false);
     }
   };
-
+  
   // Edit an Existing Brand
   const handleEditBrand = async () => {
     if (!editBrandName.trim()) {
       setError("Brand name cannot be empty");
       return;
     }
+    
     if (!editChainId) {
       setError("Please select a company");
       return;
     }
-
+    
     try {
-      const selectedChain = chains.find(c => c.chainId.toString() === editChainId);
-      
-      const response = await axios.put(`http://localhost:8080/api/brands/${editBrandId}`, {
-        brandName: editBrandName,
-        chain: selectedChain,
-        updatedAt: new Date()
+      setLoading(true);
+      const response = await axios.put(`${API_URL}/brands/${editBrandId}?chainId=${editChainId}`, {
+        brandName: editBrandName
       });
       
-      console.log("Update response:", response.data);
       setEditBrandId(null);
       setEditBrandName("");
       setEditChainId("");
       setError(null);
       setSuccess("Brand updated successfully!");
       setShowEditBrand(false);
-      fetchBrands();
+      fetchBrands(); // Refresh list
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error updating brand:", err);
-      setError(err.response?.data || "Error updating brand");
+      setError(err.response?.data?.error || "Error updating brand");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Delete a Brand
   const handleDeleteBrand = async (brandId) => {
     if (!window.confirm("Are you sure you want to delete this brand?")) return;
-
+  
     try {
-      console.log("Attempting to delete brand with ID:", brandId);
+      setLoading(true);
       
-      const token = localStorage.getItem("token");
-      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      // First check if the brand can be deleted
+      const canDeleteResponse = await axios.get(`${API_URL}/brands/can-delete/${brandId}`);
       
-      const response = await axios.delete(`http://localhost:8080/api/brands/${brandId}`, config);
+      if (!canDeleteResponse.data) {
+        setError("Cannot delete brand as it is associated with zones");
+        setLoading(false);
+        return;
+      }
       
-      console.log("Delete response:", response.data);
+      const response = await axios.delete(`${API_URL}/brands/${brandId}`);
+      
       setSuccess("Brand deleted successfully!");
-      fetchBrands();
+      fetchBrands(); // Refresh list
       
+      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error deleting brand:", err);
+      setError(err.response?.data?.error || "Error deleting brand");
       
-      if (err.response && err.response.status === 403) {
-        setError("Permission denied: You don't have authorization to delete this brand.");
-      } else {
-        setError(`Error deleting brand: ${err.response?.data || err.message}`);
-      }
-      
+      // Clear error message after 5 seconds
       setTimeout(() => setError(null), 5000);
+    } finally {
+      setLoading(false);
     }
   };
 
   const initiateEditBrand = (brand) => {
     setEditBrandId(brand.brandId);
     setEditBrandName(brand.brandName);
-    setEditChainId(brand.chain.chainId.toString());
+    setEditChainId(brand.chain.chainId);
     setShowEditBrand(true);
     setShowAddBrand(false);
-  };
-
-  const handleCancel = () => {
-    setShowAddBrand(false);
-    setShowEditBrand(false);
     setError(null);
-    setNewBrandName("");
-    setSelectedChainId("");
-    setEditBrandName("");
-    setEditChainId("");
+    setSuccess(null);
   };
 
-  // Filter chains by selected group
-  const filteredChains = filterGroupId 
-    ? chains.filter(chain => chain.group.groupId.toString() === filterGroupId)
-    : chains;
+  const clearMessages = () => {
+    setError(null);
+    setSuccess(null);
+  };
 
+  // Filter brands by company and group
+  const filteredBrands = brands.filter(brand => {
+    let matchesCompany = true;
+    let matchesGroup = true;
+    
+    if (filterCompany) {
+      matchesCompany = brand.chain && brand.chain.chainId.toString() === filterCompany;
+    }
+    
+    if (filterGroup) {
+      matchesGroup = brand.chain && brand.chain.group && brand.chain.group.groupId.toString() === filterGroup;
+    }
+    
+    return matchesCompany && matchesGroup;
+  });
+
+  // Get chain name by chainId
+  const getChainName = (chainId) => {
+    const chain = chains.find(chain => chain.chainId.toString() === chainId.toString());
+    return chain ? chain.companyName || chain.chainName : "";
+  };
+  
   return (
     <div className="dashboard-container">
       <div className="main-content">
         {/* Sidebar Component */}
         <Sidebar activePage="Manage Brands" />
 
-        {/* Main Content Area */}
         <div className="content-area">
-          <div className="content-header">
-            <h2>Manage Brand Section</h2>
+          <div className="page-header">
+            <h1>Brand Management</h1>
             <p>Create, edit, and manage your brands</p>
           </div>
 
-          {/* Alert Messages */}
+          {/* Messages */}
           {error && (
             <div className="alert alert-danger">
+              <FontAwesomeIcon icon={faExclamationCircle} className="alert-icon" />
               {error}
               <button className="close-btn" onClick={() => setError(null)}>×</button>
             </div>
@@ -233,108 +245,110 @@ const ManageBrands = () => {
           
           {success && (
             <div className="alert alert-success">
-              {success}
+              <FontAwesomeIcon icon={faCheckCircle} className="alert-icon" />
+              <span className="alert-message">{success}</span>
               <button className="close-btn" onClick={() => setSuccess(null)}>×</button>
             </div>
           )}
 
           {!showAddBrand && !showEditBrand && (
-            <>
-              <div className="dashboard-stats">
+            <div className="dashboard-content">
+              <div className="dashboard-header">
                 {/* Total Groups Card */}
-                <div className="stats-card" style={{ backgroundColor: '#e74c3c', color: 'white' }}>
-                  <div className="stats-details">
-                    <div className="card-title" style={{ color: 'white' }}>Total Groups</div>
-                    <div className="card-value">{totalGroups}</div>
+                <div className="stats-card groups-card">
+                  <div className="stats-card-content">
+                    <div className="card-title">Total Groups</div>
+                    <div className="card-value">{groups.length}</div>
+                  </div>
+                  <div className="stats-card-icon">
+                    <FontAwesomeIcon icon={faFolderOpen} />
                   </div>
                 </div>
-
+                
                 {/* Total Chains Card */}
-                <div className="stats-card" style={{ backgroundColor: '#f1c40f', color: 'white' }}>
-                  <div className="stats-details">
-                    <div className="card-title" style={{ color: 'white' }}>Total Chains</div>
-                    <div className="card-value">{totalChains}</div>
+                <div className="stats-card chains-card">
+                  <div className="stats-card-content">
+                    <div className="card-title">Total Chains</div>
+                    <div className="card-value">{chains.length}</div>
+                  </div>
+                  <div className="stats-card-icon">
+                    <FontAwesomeIcon icon={faFolderOpen} />
                   </div>
                 </div>
 
                 {/* Total Brands Card */}
-                <div className="stats-card" style={{ backgroundColor: '#f1c40f', color: 'white' }}>
-                  <div className="stats-details">
-                    <div className="card-title" style={{ color: 'white' }}>Total Brands</div>
+                <div className="stats-card brands-card">
+                  <div className="stats-card-content">
+                    <div className="card-title">Total Brands</div>
                     <div className="card-value">{totalBrands}</div>
                   </div>
+                  <div className="stats-card-icon">
+                    <FontAwesomeIcon icon={faCopyright} />
+                  </div>
                 </div>
-              </div>
 
-              <div className="action-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* Filter options */}
+                <div className="filter-section">
+                  <div className="filter-row">
+                    <div className="filter-item">
+                      <label htmlFor="companyFilter">Filter by Company:</label>
+                      <select
+                        id="companyFilter"
+                        value={filterCompany}
+                        onChange={(e) => setFilterCompany(e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All</option>
+                        {chains.map(chain => (
+                          <option key={chain.chainId} value={chain.chainId}>
+                            {chain.companyName || chain.chainName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="filter-item">
+                      <label htmlFor="groupFilter">Filter by Group:</label>
+                      <select
+                        id="groupFilter"
+                        value={filterGroup}
+                        onChange={(e) => setFilterGroup(e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All</option>
+                        {groups.map(group => (
+                          <option key={group.groupId} value={group.groupId}>
+                            {group.groupName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Add Brand Button */}
                 <button 
-                  className="add-group-btn" 
-                  onClick={() => setShowAddBrand(true)}
+                  className="add-brand-btn" 
+                  onClick={() => {
+                    setShowAddBrand(true);
+                    clearMessages();
+                  }}
                   disabled={loading}
-                  style={{ backgroundColor: '#27ae60' }}
                 >
-                  Add Brand
+                  <FontAwesomeIcon icon={faPlusCircle} />
+                  {loading ? "Loading..." : "Add Brand"}
                 </button>
-
-                {/* Filter By Group */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <div>
-                    <label style={{ marginRight: '10px', fontWeight: '500' }}>Filter by Group</label>
-                    <select 
-                      value={filterGroupId} 
-                      onChange={(e) => {
-                        setFilterGroupId(e.target.value);
-                        setFilterChainId("");  // Reset chain filter when group changes
-                      }}
-                      style={{ 
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        minWidth: '200px'
-                      }}
-                    >
-                      <option value="">All Groups</option>
-                      {groups.map(group => (
-                        <option key={group.groupId} value={group.groupId}>
-                          {group.groupName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label style={{ marginRight: '10px', fontWeight: '500' }}>Filter by Company</label>
-                    <select 
-                      value={filterChainId} 
-                      onChange={(e) => setFilterChainId(e.target.value)}
-                      style={{ 
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        minWidth: '200px'
-                      }}
-                    >
-                      <option value="">All Companies</option>
-                      {filteredChains.map(chain => (
-                        <option key={chain.chainId} value={chain.chainId}>
-                          {chain.companyName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
               </div>
 
               {/* Brands Table */}
               <div className="table-container">
-                <table className="groups-table">
+                <table className="brands-table">
                   <thead>
                     <tr>
                       <th>Sr.No</th>
-                      <th>Group Name</th>
+                      <th>Group</th>
                       <th>Company</th>
-                      <th>Brand Name</th>
+                      <th>Brand</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
@@ -344,34 +358,32 @@ const ManageBrands = () => {
                       <tr>
                         <td colSpan="6" className="loading-cell">
                           <div className="loading-spinner"></div>
-                          <div>Loading brands...</div>
+                          <span>Loading brands...</span>
                         </td>
                       </tr>
                     ) : filteredBrands.length === 0 ? (
                       <tr>
                         <td colSpan="6" className="empty-cell">
-                          No brands found. Add a new brand to get started.
+                          <div className="empty-state">
+                            <FontAwesomeIcon icon={faFolderOpen} className="empty-icon" />
+                            <p>No brands found</p>
+                          </div>
                         </td>
                       </tr>
                     ) : (
                       filteredBrands.map((brand, index) => (
                         <tr key={brand.brandId}>
                           <td>{index + 1}</td>
-                          <td>{brand.chain.group.groupName}</td>
-                          <td>{brand.chain.companyName}</td>
+                          <td>{brand.chain && brand.chain.group ? brand.chain.group.groupName : "N/A"}</td>
+                          <td>{brand.chain ? (brand.chain.companyName || brand.chain.chainName) : "N/A"}</td>
                           <td>{brand.brandName}</td>
                           <td>
                             <button
                               className="edit-btn"
                               onClick={() => initiateEditBrand(brand)}
-                              style={{ 
-                                backgroundColor: '#f39c12', 
-                                color: 'white', 
-                                border: 'none',
-                                padding: '8px 16px',
-                                borderRadius: '4px'
-                              }}
+                              disabled={loading}
                             >
+                              <FontAwesomeIcon icon={faEdit} />
                               Edit
                             </button>
                           </td>
@@ -379,14 +391,9 @@ const ManageBrands = () => {
                             <button 
                               className="delete-btn" 
                               onClick={() => handleDeleteBrand(brand.brandId)}
-                              style={{ 
-                                backgroundColor: '#e74c3c', 
-                                color: 'white', 
-                                border: 'none',
-                                padding: '8px 16px',
-                                borderRadius: '4px'
-                              }}
+                              disabled={loading}
                             >
+                              <FontAwesomeIcon icon={faTrashAlt} />
                               Delete
                             </button>
                           </td>
@@ -396,154 +403,140 @@ const ManageBrands = () => {
                   </tbody>
                 </table>
               </div>
-            </>
+            </div>
           )}
 
           {/* Add Brand Form */}
           {showAddBrand && (
-            <div className="card">
-              <div className="card-header">
-                <h3>Add New Brand</h3>
+            <div className="brand-form">
+              <h3>Add New Brand</h3>
+              <div className="form-group">
+                <label htmlFor="brandName">Enter Brand Name:</label>
+                <input
+                  id="brandName"
+                  type="text"
+                  placeholder="Enter Brand Name"
+                  value={newBrandName}
+                  onChange={(e) => setNewBrandName(e.target.value)}
+                  className="form-input"
+                  disabled={loading}
+                />
               </div>
-              <div className="card-body">
-                <div className="form-group">
-                  <label htmlFor="brandName">Enter Brand Name:</label>
-                  <input
-                    id="brandName"
-                    type="text"
-                    placeholder="Enter Brand Name"
-                    value={newBrandName}
-                    onChange={(e) => setNewBrandName(e.target.value)}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="selectGroup">Select Group:</label>
-                  <select
-                    id="selectGroup"
-                    value={filterGroupId}
-                    onChange={(e) => {
-                      setFilterGroupId(e.target.value);
-                      setSelectedChainId("");
-                    }}
-                    className="form-input"
-                  >
-                    <option value="">Select a group</option>
-                    {groups.map(group => (
-                      <option key={group.groupId} value={group.groupId}>
-                        {group.groupName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="selectChain">Select Company:</label>
-                  <select
-                    id="selectChain"
-                    value={selectedChainId}
-                    onChange={(e) => setSelectedChainId(e.target.value)}
-                    className="form-input"
-                  >
-                    <option value="">Select a company</option>
-                    {filteredChains.map(chain => (
-                      <option key={chain.chainId} value={chain.chainId}>
-                        {chain.companyName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="button-group">
-                  <button 
-                    className="submit-btn"
-                    onClick={handleAddBrand}
-                    style={{ backgroundColor: '#3498db' }}
-                  >
-                    Add Brand
-                  </button>
-                  <button 
-                    className="cancel-btn"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                </div>
+              <div className="form-group">
+                <label htmlFor="companySelect">Select Company:</label>
+                <select
+                  id="companySelect"
+                  value={selectedChainId}
+                  onChange={(e) => setSelectedChainId(e.target.value)}
+                  className="form-select"
+                  disabled={loading}
+                >
+                  <option value="">Select Company</option>
+                  {chains.map(chain => (
+                    <option key={chain.chainId} value={chain.chainId}>
+                      {chain.companyName || chain.chainName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="button-group">
+                <button 
+                  className="submit-btn"
+                  onClick={handleAddBrand}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <div className="btn-spinner"></div>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSave} />
+                      Add Brand
+                    </>
+                  )}
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={() => {
+                    setShowAddBrand(false);
+                    setNewBrandName("");
+                    setSelectedChainId("");
+                    clearMessages();
+                  }}
+                  disabled={loading}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                  Cancel
+                </button>
               </div>
             </div>
           )}
 
           {/* Edit Brand Form */}
           {showEditBrand && (
-            <div className="card">
-              <div className="card-header">
-                <h3>Edit Brand</h3>
+            <div className="brand-form">
+              <h3>Edit Brand</h3>
+              <div className="form-group">
+                <label htmlFor="editBrandName">Enter Brand Name:</label>
+                <input
+                  id="editBrandName"
+                  type="text"
+                  value={editBrandName}
+                  onChange={(e) => setEditBrandName(e.target.value)}
+                  className="form-input"
+                  disabled={loading}
+                />
               </div>
-              <div className="card-body">
-                <div className="form-group">
-                  <label htmlFor="editBrandName">Enter Brand Name:</label>
-                  <input
-                    id="editBrandName"
-                    type="text"
-                    value={editBrandName}
-                    onChange={(e) => setEditBrandName(e.target.value)}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="editSelectGroup">Select Group:</label>
-                  <select
-                    id="editSelectGroup"
-                    value={filterGroupId}
-                    onChange={(e) => {
-                      setFilterGroupId(e.target.value);
-                      setEditChainId("");
-                    }}
-                    className="form-input"
-                  >
-                    <option value="">Select a group</option>
-                    {groups.map(group => (
-                      <option key={group.groupId} value={group.groupId}>
-                        {group.groupName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="editSelectChain">Select Company:</label>
-                  <select
-                    id="editSelectChain"
-                    value={editChainId}
-                    onChange={(e) => setEditChainId(e.target.value)}
-                    className="form-input"
-                  >
-                    <option value="">Select a company</option>
-                    {filteredChains.map(chain => (
-                      <option key={chain.chainId} value={chain.chainId}>
-                        {chain.companyName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="button-group">
-                  <button 
-                    className="submit-btn"
-                    onClick={handleEditBrand}
-                    style={{ backgroundColor: '#3498db' }}
-                  >
-                    Update
-                  </button>
-                  <button 
-                    className="cancel-btn"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                </div>
+              <div className="form-group">
+                <label htmlFor="editCompanySelect">Select Company:</label>
+                <select
+                  id="editCompanySelect"
+                  value={editChainId}
+                  onChange={(e) => setEditChainId(e.target.value)}
+                  className="form-select"
+                  disabled={loading}
+                >
+                  <option value="">Select Company</option>
+                  {chains.map(chain => (
+                    <option key={chain.chainId} value={chain.chainId}>
+                      {chain.companyName || chain.chainName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="button-group">
+                <button 
+                  className="submit-btn"
+                  onClick={handleEditBrand}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <div className="btn-spinner"></div>
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSyncAlt} />
+                      Update
+                    </>
+                  )}
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={() => {
+                    setShowEditBrand(false);
+                    setEditBrandName("");
+                    setEditChainId("");
+                    clearMessages();
+                  }}
+                  disabled={loading}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                  Cancel
+                </button>
               </div>
             </div>
           )}
