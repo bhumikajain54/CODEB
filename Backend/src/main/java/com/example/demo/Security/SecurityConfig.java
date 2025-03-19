@@ -223,6 +223,7 @@ public class SecurityConfig {
                         // ALLOW ACCESS TO GROUPS API (ALL METHODS)
                         .requestMatchers("/api/groups/**").permitAll()
                         .requestMatchers("/api/chains/**").permitAll()
+                        .requestMatchers("/api/brands/**").permitAll()
 
                         // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

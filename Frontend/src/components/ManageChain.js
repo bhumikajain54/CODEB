@@ -418,7 +418,7 @@ const ManageChain = () => {
           {showEditChain && (
             <div className="card">
               <div className="card-header">
-                <h3>Edit Chain</h3>
+                <h3>Edit Company</h3>
               </div>
               <div className="card-body">
                 <div className="form-group">

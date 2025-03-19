@@ -1,12 +1,9 @@
 package com.example.demo.Entity;
-import jakarta.persistence.*;
-import lombok.*;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "brands")
 public class Brand {
 
@@ -14,12 +11,36 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long brandId;
 
-    @Column(nullable = false)
+    @Column(name = "brand_name", nullable = false)
     private String brandName;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
     @ManyToOne
     @JoinColumn(name = "chain_id", nullable = false)
     private Chain chain;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Default constructor
+    public Brand() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // Getters and Setters
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
 
     public String getBrandName() {
         return brandName;
@@ -29,12 +50,12 @@ public class Brand {
         this.brandName = brandName;
     }
 
-    public Long getBrandId() {
-        return brandId;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public Chain getChain() {
@@ -45,5 +66,19 @@ public class Brand {
         this.chain = chain;
     }
 
-    // Other fields and methods...
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }
