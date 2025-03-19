@@ -2216,6 +2216,7 @@ button:hover {
 /* Add these styles to your existing App.css */
 
 /* Dashboard Container */
+/* Dashboard Container */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -2272,6 +2273,97 @@ button:hover {
   margin-left: 0.5rem;
 }
 
+/* Sidebar links styles */
+.sidebar a {
+  text-decoration: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.sidebar a.active {
+  background-color: #3498db;
+  font-weight: 600;
+}
+
+.sidebar .icon {
+  margin-right: 0.5rem;
+}
+
+/* User Panel */
+.user-panel {
+  padding: 1.5rem 0;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.25rem;
+}
+
+.user-panel h3 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Header Styles */
+.top-header {
+  background-color: #3498db;
+  color: white;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.logo img {
+  height: 1.875rem;
+  margin-right: 0.625rem;
+}
+
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #2980b9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
 /* Content Area */
 .content-area {
   flex: 1;
@@ -2279,17 +2371,18 @@ button:hover {
   background-color: #f5f5f5;
 }
 
-.content-header {
+.content-header, .page-header {
   margin-bottom: 1.5rem;
 }
 
-.content-header h2 {
+.content-header h2, .page-header h1 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  color: #333;
 }
 
-.content-header p {
+.content-header p, .page-header p {
   margin-top: 0.5rem;
   color: #666;
 }
@@ -2316,6 +2409,10 @@ button:hover {
   border: 1px solid #c3e6cb;
 }
 
+.alert-icon {
+  margin-right: 0.625rem;
+}
+
 .close-btn {
   background: none;
   border: none;
@@ -2326,10 +2423,11 @@ button:hover {
 }
 
 /* Dashboard Stats */
-.dashboard-stats {
+.dashboard-stats, .dashboard-header {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .stats-card {
@@ -2338,17 +2436,26 @@ button:hover {
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   flex: 1;
+  min-width: 200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.stats-details {
+.stats-details, .stats-card-content {
   display: flex;
   flex-direction: column;
 }
 
-.stats-icon {
+.stats-icon, .stats-card-icon {
   margin-bottom: 1rem;
   font-size: 1.5rem;
   color: #3498db;
+}
+
+.stats-card-icon {
+  font-size: 2.25rem;
+  opacity: 0.8;
 }
 
 .card-title {
@@ -2364,6 +2471,10 @@ button:hover {
   color: #2c3e50;
 }
 
+.groups-card, .chains-card, .brands-card {
+  color: inherit;
+}
+
 /* Action Bar */
 .action-bar {
   display: flex;
@@ -2371,7 +2482,7 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-.add-group-btn {
+.add-group-btn, .add-brand-btn {
   background-color: #3498db;
   color: white;
   border: none;
@@ -2379,13 +2490,17 @@ button:hover {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
-.add-group-btn:hover {
+.add-group-btn:hover, .add-brand-btn:hover {
   background-color: #2980b9;
 }
 
-.add-group-btn:disabled {
+.add-group-btn:disabled, .add-brand-btn:disabled {
   background-color: #95a5a6;
   cursor: not-allowed;
 }
@@ -2398,24 +2513,29 @@ button:hover {
   overflow: hidden;
 }
 
-.groups-table {
+.groups-table, .brands-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.groups-table th, .groups-table td {
+.groups-table th, .groups-table td, 
+.brands-table th, .brands-table td {
   padding: 0.75rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e1e1e1;
 }
 
-.groups-table th {
+.groups-table th, .brands-table th {
   background-color: #f8f9fa;
   font-weight: 600;
   color: #495057;
 }
 
-.groups-table tr:last-child td {
+.groups-table tr:hover, .brands-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.groups-table tr:last-child td, .brands-table tr:last-child td {
   border-bottom: none;
 }
 
@@ -2424,12 +2544,17 @@ button:hover {
   gap: 0.5rem;
 }
 
+/* Edit and Delete Buttons */
 .edit-btn, .delete-btn {
   padding: 0.35rem 0.75rem;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
 }
 
 .edit-btn {
@@ -2452,7 +2577,7 @@ button:hover {
 }
 
 /* Form Styles */
-.card {
+.card, .brand-form {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -2465,13 +2590,14 @@ button:hover {
   background-color: #f8f9fa;
 }
 
-.card-header h3 {
+.card-header h3, .brand-form h3 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
+  color: #333;
 }
 
-.card-body {
+.card-body, .brand-form {
   padding: 1.5rem;
 }
 
@@ -2483,9 +2609,10 @@ button:hover {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #555;
 }
 
-.form-input {
+.form-input, .form-select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ced4da;
@@ -2493,9 +2620,16 @@ button:hover {
   font-size: 1rem;
 }
 
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
 .button-group {
   display: flex;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .submit-btn, .cancel-btn {
@@ -2505,6 +2639,10 @@ button:hover {
   transition: all 0.3s ease;
   border: none;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .submit-btn {
@@ -2523,6 +2661,16 @@ button:hover {
 
 .cancel-btn:hover {
   background-color: #dee2e6;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
 }
 
 /* Loading and Empty States */
@@ -2549,37 +2697,17 @@ button:hover {
   }
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-  }
-  
-  .sidebar {
-    width: 100%;
-    min-height: auto;
-  }
-  
-  .dashboard-stats {
-    flex-direction: column;
-  }
-  
-  .action-cell {
-    flex-direction: column;
-  }
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #888;
 }
 
-/* Sidebar links styles */
-.sidebar a {
-  text-decoration: none;
-  color: white;
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.625rem;
 }
-
-.sidebar a:hover {
-  text-decoration: none;
-}
-
-/* Additional styles for Chain Management Component */
 
 /* Filter section styles */
 .filter-section {
@@ -2590,16 +2718,32 @@ button:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.filter-group {
+.filter-group, .filter-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.filter-group label {
+.filter-group label, .filter-item label {
   font-weight: 500;
   margin-right: 0.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.filter-item {
+  flex: 1;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.875rem;
 }
 
 .filter-buttons {
@@ -2641,14 +2785,43 @@ button:hover {
   margin-top: 0.25rem;
 }
 
-/* Responsive styles for filter section */
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .filter-group {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+  
+  .sidebar a span {
+    display: none;
+  }
+  
+  .content-area {
+    margin-left: 0;
+  }
+  
+  .dashboard-stats, .dashboard-header {
+    flex-direction: column;
+  }
+  
+  .stats-card {
+    width: 100%;
+  }
+  
+  .action-cell {
+    flex-direction: column;
+  }
+  
+  .filter-group, .filter-row {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  .filter-group select {
+  .filter-group select, .filter-select {
     width: 100%;
   }
   
@@ -2660,4 +2833,10 @@ button:hover {
   .filter-btn, .clear-btn {
     flex: 1;
   }
+  
+  .button-group {
+    flex-direction: column;
+  }
 }
+
+
