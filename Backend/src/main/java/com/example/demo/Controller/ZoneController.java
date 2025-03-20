@@ -84,6 +84,7 @@ public class ZoneController {
         }
     }
 
+
     @GetMapping("/count")
     public ResponseEntity<Long> getZoneCount() {
         return ResponseEntity.ok(zoneService.getZoneCount());
