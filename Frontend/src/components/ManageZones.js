@@ -15,29 +15,37 @@ import {
   faSyncAlt,
   faFolderOpen,
   faMapMarkerAlt,
+  faFilter,
+  faBuilding,
   faCopyright,
-  faBuilding
+  faLayerGroup
 } from "@fortawesome/free-solid-svg-icons";
 
 const ManageZones = () => {
+  // State variables
   const [zones, setZones] = useState([]);
   const [brands, setBrands] = useState([]);
   const [chains, setChains] = useState([]);
   const [groups, setGroups] = useState([]);
+  
   const [newZoneName, setNewZoneName] = useState("");
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [editZoneId, setEditZoneId] = useState(null);
   const [editZoneName, setEditZoneName] = useState("");
   const [editBrandId, setEditBrandId] = useState("");
+  
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [totalZones, setTotalZones] = useState(0);
   const [showAddZone, setShowAddZone] = useState(false);
   const [showEditZone, setShowEditZone] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filterBrand, setFilterBrand] = useState("");
-  const [filterChain, setFilterChain] = useState("");
-  const [filterGroup, setFilterGroup] = useState("");
+  
+  // Filter states
+  const [filterBrandId, setFilterBrandId] = useState("");
+  const [filterChainId, setFilterChainId] = useState("");
+  const [filterGroupId, setFilterGroupId] = useState("");
+  const [filteredZones, setFilteredZones] = useState([]);
 
   const API_URL = "http://localhost:8080/api";
 
@@ -46,8 +54,11 @@ const ManageZones = () => {
     fetchBrands();
     fetchChains();
     fetchGroups();
-    fetchZoneCount();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [zones, filterBrandId, filterChainId, filterGroupId]);
 
   // Fetch All Zones
   const fetchZones = async () => {
@@ -55,22 +66,14 @@ const ManageZones = () => {
       setLoading(true);
       const response = await axios.get(`${API_URL}/zones`);
       setZones(response.data);
+      setFilteredZones(response.data);
+      setTotalZones(response.data.length);
       setError(null);
     } catch (err) {
       console.error("Error fetching zones:", err);
       setError("Failed to load zones. Please try again.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch Zone Count
-  const fetchZoneCount = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/zones/count`);
-      setTotalZones(response.data);
-    } catch (err) {
-      console.error("Error fetching zone count:", err);
     }
   };
 
@@ -104,64 +107,40 @@ const ManageZones = () => {
     }
   };
 
-  // Fetch Zones By Brand
-  const fetchZonesByBrand = async (brandId) => {
-    if (!brandId) {
-      fetchZones();
-      return;
+  // Apply Filters
+  const applyFilters = () => {
+    let result = [...zones];
+    
+    if (filterBrandId) {
+      result = result.filter(zone => zone.brand && zone.brand.brandId.toString() === filterBrandId);
     }
     
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/zones/brand/${brandId}`);
-      setZones(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching zones by brand:", err);
-      setError("Failed to load zones. Please try again.");
-    } finally {
-      setLoading(false);
+    if (filterChainId) {
+      result = result.filter(zone => 
+        zone.brand && 
+        zone.brand.chain && 
+        zone.brand.chain.chainId.toString() === filterChainId
+      );
     }
+    
+    if (filterGroupId) {
+      result = result.filter(zone => 
+        zone.brand && 
+        zone.brand.chain && 
+        zone.brand.chain.group && 
+        zone.brand.chain.group.groupId.toString() === filterGroupId
+      );
+    }
+    
+    setFilteredZones(result);
   };
 
-  // Fetch Zones By Chain
-  const fetchZonesByChain = async (chainId) => {
-    if (!chainId) {
-      fetchZones();
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/zones/chain/${chainId}`);
-      setZones(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching zones by chain:", err);
-      setError("Failed to load zones. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch Zones By Group
-  const fetchZonesByGroup = async (groupId) => {
-    if (!groupId) {
-      fetchZones();
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/zones/group/${groupId}`);
-      setZones(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching zones by group:", err);
-      setError("Failed to load zones. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  // Reset Filters
+  const resetFilters = () => {
+    setFilterBrandId("");
+    setFilterChainId("");
+    setFilterGroupId("");
+    setFilteredZones(zones);
   };
 
   // Add a New Zone
@@ -188,13 +167,13 @@ const ManageZones = () => {
       );
 
       setZones([...zones, response.data]);
+      setFilteredZones([...filteredZones, response.data]);
       setNewZoneName("");
       setSelectedBrandId("");
       setError(null);
       setSuccess("Zone added successfully!");
       setShowAddZone(false);
-      fetchZones();
-      fetchZoneCount();
+      fetchZones(); // Refresh to get accurate data
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
@@ -235,7 +214,7 @@ const ManageZones = () => {
       setError(null);
       setSuccess("Zone updated successfully!");
       setShowEditZone(false);
-      fetchZones();
+      fetchZones(); // Refresh list
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
@@ -257,7 +236,6 @@ const ManageZones = () => {
       
       setSuccess("Zone deleted successfully!");
       fetchZones();
-      fetchZoneCount();
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
@@ -273,9 +251,9 @@ const ManageZones = () => {
   };
 
   const initiateEditZone = (zone) => {
-    setEditZoneId(zone.zoneId);
+    setEditZoneId(zone.id || zone.zoneId);
     setEditZoneName(zone.zoneName);
-    setEditBrandId(zone.brand.brandId);
+    setEditBrandId(zone.brand ? zone.brand.brandId : "");
     setShowEditZone(true);
     setShowAddZone(false);
     setError(null);
@@ -285,38 +263,6 @@ const ManageZones = () => {
   const clearMessages = () => {
     setError(null);
     setSuccess(null);
-  };
-
-  // Apply filters based on selections
-  useEffect(() => {
-    if (filterBrand) {
-      fetchZonesByBrand(filterBrand);
-    } else if (filterChain) {
-      fetchZonesByChain(filterChain);
-    } else if (filterGroup) {
-      fetchZonesByGroup(filterGroup);
-    } else {
-      fetchZones();
-    }
-  }, [filterBrand, filterChain, filterGroup]);
-
-  // Handle filter changes
-  const handleFilterGroupChange = (e) => {
-    const groupId = e.target.value;
-    setFilterGroup(groupId);
-    setFilterChain("");
-    setFilterBrand("");
-  };
-
-  const handleFilterChainChange = (e) => {
-    const chainId = e.target.value;
-    setFilterChain(chainId);
-    setFilterBrand("");
-  };
-
-  const handleFilterBrandChange = (e) => {
-    const brandId = e.target.value;
-    setFilterBrand(brandId);
   };
   
   return (
@@ -397,13 +343,17 @@ const ManageZones = () => {
 
                 {/* Filter options */}
                 <div className="filter-section">
+                  <div className="filter-header">
+                    <FontAwesomeIcon icon={faFilter} className="filter-icon" />
+                    <span>Filters</span>
+                  </div>
                   <div className="filter-row">
                     <div className="filter-item">
                       <label htmlFor="groupFilter">Filter by Group:</label>
                       <select
                         id="groupFilter"
-                        value={filterGroup}
-                        onChange={handleFilterGroupChange}
+                        value={filterGroupId}
+                        onChange={(e) => setFilterGroupId(e.target.value)}
                         className="filter-select"
                       >
                         <option value="">All Groups</option>
@@ -419,13 +369,13 @@ const ManageZones = () => {
                       <label htmlFor="chainFilter">Filter by Company:</label>
                       <select
                         id="chainFilter"
-                        value={filterChain}
-                        onChange={handleFilterChainChange}
+                        value={filterChainId}
+                        onChange={(e) => setFilterChainId(e.target.value)}
                         className="filter-select"
                       >
                         <option value="">All Companies</option>
                         {chains
-                          .filter(chain => !filterGroup || (chain.group && chain.group.groupId.toString() === filterGroup))
+                          .filter(chain => !filterGroupId || (chain.group && chain.group.groupId.toString() === filterGroupId))
                           .map(chain => (
                             <option key={chain.chainId} value={chain.chainId}>
                               {chain.companyName || chain.chainName}
@@ -438,15 +388,15 @@ const ManageZones = () => {
                       <label htmlFor="brandFilter">Filter by Brand:</label>
                       <select
                         id="brandFilter"
-                        value={filterBrand}
-                        onChange={handleFilterBrandChange}
+                        value={filterBrandId}
+                        onChange={(e) => setFilterBrandId(e.target.value)}
                         className="filter-select"
                       >
                         <option value="">All Brands</option>
                         {brands
                           .filter(brand => 
-                            (!filterChain || (brand.chain && brand.chain.chainId.toString() === filterChain)) &&
-                            (!filterGroup || (brand.chain && brand.chain.group && brand.chain.group.groupId.toString() === filterGroup))
+                            (!filterChainId || (brand.chain && brand.chain.chainId.toString() === filterChainId)) &&
+                            (!filterGroupId || (brand.chain && brand.chain.group && brand.chain.group.groupId.toString() === filterGroupId))
                           )
                           .map(brand => (
                             <option key={brand.brandId} value={brand.brandId}>
@@ -455,6 +405,10 @@ const ManageZones = () => {
                           ))}
                       </select>
                     </div>
+                    
+                    <button className="reset-filter-btn" onClick={resetFilters}>
+                      Reset Filters
+                    </button>
                   </div>
                 </div>
 
@@ -482,21 +436,20 @@ const ManageZones = () => {
                       <th>Company</th>
                       <th>Brand</th>
                       <th>Zone</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan="7" className="loading-cell">
+                        <td colSpan="6" className="loading-cell">
                           <div className="loading-spinner"></div>
                           <span>Loading zones...</span>
                         </td>
                       </tr>
-                    ) : zones.length === 0 ? (
+                    ) : filteredZones.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="empty-cell">
+                        <td colSpan="6" className="empty-cell">
                           <div className="empty-state">
                             <FontAwesomeIcon icon={faMapMarkerAlt} className="empty-icon" />
                             <p>No zones found</p>
@@ -504,8 +457,8 @@ const ManageZones = () => {
                         </td>
                       </tr>
                     ) : (
-                      zones.map((zone, index) => (
-                        <tr key={zone.id}>
+                      filteredZones.map((zone, index) => (
+                        <tr key={zone.id || zone.zoneId}>
                           <td>{index + 1}</td>
                           <td>
                             {zone.brand && zone.brand.chain && zone.brand.chain.group
@@ -519,7 +472,7 @@ const ManageZones = () => {
                           </td>
                           <td>{zone.brand ? zone.brand.brandName : "N/A"}</td>
                           <td>{zone.zoneName}</td>
-                          <td>
+                          <td className="actions-cell">
                             <button
                               className="edit-btn"
                               onClick={() => initiateEditZone(zone)}
@@ -528,11 +481,9 @@ const ManageZones = () => {
                               <FontAwesomeIcon icon={faEdit} />
                               Edit
                             </button>
-                          </td>
-                          <td>
                             <button 
                               className="delete-btn" 
-                              onClick={() => handleDeleteZone(zone.id)}
+                              onClick={() => handleDeleteZone(zone.id || zone.zoneId)}
                               disabled={loading}
                             >
                               <FontAwesomeIcon icon={faTrashAlt} />
