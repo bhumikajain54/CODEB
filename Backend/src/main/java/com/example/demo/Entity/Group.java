@@ -18,7 +18,6 @@ public class Group {
     @Column(nullable = false)
     private boolean isActive = true;
 
-//    private boolean deleted = false; // Soft delete field
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -68,11 +67,5 @@ public class Group {
         this.updatedAt = updatedAt;
     }
 
-//    public boolean isDeleted() {
-//        return deleted;
-//    }
-//
-//    public void setDeleted(boolean deleted) {
-//        this.deleted = deleted;
-//    }
+
 }

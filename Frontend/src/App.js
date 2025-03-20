@@ -14,6 +14,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import "./App.css";
 import ManageBrands from "./components/ManageBrands";
+import ManageZones from "./components/ManageZones";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
                 {/* <Route path="/chains" element={<UserDashboard />} /> */}
                 <Route path="/chains" element={<ManageChain />} /> {/* Use ManageChain component */}
                 <Route path="/brands" element={<ManageBrands />} />
-                <Route path="/subzones" element={<UserDashboard />} />
+                <Route path="/subzones" element={<ManageZones />} />
                 <Route path="/estimates" element={<UserDashboard />} />
                 <Route path="/invoices" element={<UserDashboard />} />
               </Route>

@@ -7,7 +7,7 @@ const Sidebar = ({ activePage }) => {
     { name: "Manage Groups", path: "/groups" },
     { name: "Manage Chain", path: "/chains" },
     { name: "Manage Brands", path: "/brands" },
-    { name: "Manage SubZones", path: "/subzones" },
+    { name: "Manage Zones", path: "/subzones" },
     { name: "Manage Estimate", path: "/estimates" },
     { name: "Manage Invoices", path: "/invoices" }
   ];

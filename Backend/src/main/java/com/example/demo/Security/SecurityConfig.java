@@ -65,7 +65,6 @@
 //    }
 //}
 
-
 package com.example.demo.Security;
 
 import org.springframework.context.annotation.Bean;
@@ -118,6 +117,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/groups/**").permitAll()
                         .requestMatchers("/api/chains/**").permitAll()
                         .requestMatchers("/api/brands/**").permitAll()
+                        .requestMatchers("/api/zones/**").permitAll()
 
                         // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
