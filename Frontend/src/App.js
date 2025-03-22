@@ -15,7 +15,7 @@ import ResetPassword from "./components/ResetPassword";
 import "./App.css";
 import ManageBrands from "./components/ManageBrands";
 import ManageZones from "./components/ManageZones";
-
+import ManageEstimate from "./components/ManageEstimate";
 function App() {
   return (
     <AuthProvider>
@@ -40,7 +40,7 @@ function App() {
                 <Route path="/chains" element={<ManageChain />} /> {/* Use ManageChain component */}
                 <Route path="/brands" element={<ManageBrands />} />
                 <Route path="/subzones" element={<ManageZones />} />
-                <Route path="/estimates" element={<UserDashboard />} />
+                <Route path="/estimates" element={<ManageEstimate />} />
                 <Route path="/invoices" element={<UserDashboard />} />
               </Route>
 
