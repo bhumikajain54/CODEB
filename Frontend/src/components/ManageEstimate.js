@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./sidebar";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -25,6 +27,7 @@ const ManageEstimates = () => {
   const [brands, setBrands] = useState([]);
   const [zones, setZones] = useState([]);
   const [groups, setGroups] = useState([]);
+  const navigate = useNavigate();
 
   // State for form inputs
   const [newEstimate, setNewEstimate] = useState({
@@ -513,6 +516,27 @@ const ManageEstimates = () => {
       return matchesGroup && matchesCompany && matchesBrand && matchesZone;
     });
   };
+  const handleGenerateInvoice = (estimate) => {
+    // Navigate to invoice creation page with estimate data
+    navigate('/invoices', { 
+      state: { 
+        ...estimate,
+        estimateId: estimate.estimateId,
+        chainId: estimate.chain?.chainId,
+        service: estimate.service,
+        quantity: estimate.quantity,
+        costPerUnit: estimate.costPerUnit,
+        amountPayable: estimate.totalCost,
+        deliveryDate: estimate.deliveryDate,
+        deliveryDetails: estimate.deliveryDetails,
+        companyName: estimate.chain?.companyName || estimate.chain?.chainName,
+        gstNumber: estimate.chain?.gstNumber || "Not Available",
+        companyAddress: estimate.chain?.companyAddress || "Address not available",
+        brandName: estimate.brandName,
+        zoneName: estimate.zoneName
+      } 
+    });
+  };
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -708,22 +732,29 @@ const ManageEstimates = () => {
                           <td>{estimate.costPerUnit}</td>
                           <td>{estimate.totalCost}</td>
                           <td>{formatDate(estimate.deliveryDate)}</td>
-                          <td className="action-buttons">
-                            <button
-                              className="edit-btn"
-                              onClick={() => initiateEditEstimate(estimate)}
-                              disabled={loading}
-                            >
-                              <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            <button
-                              className="delete-btn"
-                              onClick={() => handleDeleteEstimate(estimate.estimateId)}
-                              disabled={loading}
-                            >
-                              <FontAwesomeIcon icon={faTrashAlt} />
-                            </button>
-                          </td>
+<td className="action-buttons">
+  <button
+    className="edit-btn"
+    onClick={() => initiateEditEstimate(estimate)}
+    disabled={loading}
+  >
+    <FontAwesomeIcon icon={faEdit} />
+  </button>
+  <button
+    className="delete-btn"
+    onClick={() => handleDeleteEstimate(estimate.estimateId)}
+    disabled={loading}
+  >
+    <FontAwesomeIcon icon={faTrashAlt} />
+  </button>
+  <button 
+    className="generate-btn"
+    onClick={() => handleGenerateInvoice(estimate)}
+    disabled={loading}
+  >
+    Generate
+  </button>
+</td>
                         </tr>
                       ))
                     )}
