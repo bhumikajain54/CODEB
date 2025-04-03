@@ -433,6 +433,14 @@ const InvoiceManagement = () => {
                             >
                               <FontAwesomeIcon icon={faTrashAlt} />Delete
                             </button>
+                            <button 
+                              className="download-btn" 
+                              onClick={() => handleDownloadInvoice(invoice.id)}
+                              disabled={loading}
+                              title="Download Invoice"
+                            >
+                              <FontAwesomeIcon icon={faDownload} />Download PDF
+                            </button>
                           </td>
                         </tr>
                       ))

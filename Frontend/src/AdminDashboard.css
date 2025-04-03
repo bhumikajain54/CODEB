@@ -30,13 +30,6 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.7;
-}
-
 /* Admin Dashboard Layout */
 .min-h-screen {
   min-height: 100vh;
