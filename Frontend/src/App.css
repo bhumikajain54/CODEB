@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --primary-color: #4f46e5;
+  --primary1-color: #4f46e5;
   --primary-hover: #4338ca;
   --secondary-color: #0ea5e9;
   --success-color: #10b981;
@@ -31,8 +31,8 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+background-color: var(--primary1-color);
+  color: var(--secondary-color);
   line-height: 1.7;
   overflow-x: hidden;
 }
@@ -751,7 +751,7 @@ table tr:hover td {
 
   body {
     background-color: var(--bg-primary);
-    color: var(--text-primary);
+    color: var(--secondary-color);
   }
 
   .bg-white {
@@ -967,13 +967,13 @@ table tr:hover td {
   --spacing-xl: 32px;
 }
 
-body {
+/* body {
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   background-color: var(--bg-main);
   color: var(--text-dark);
   line-height: 1.6;
   width: 100%;
-}
+} */
 
 /* Layout Components */
 .dashboard-container {
