@@ -24,6 +24,7 @@ public class Invoice {
     @JoinColumn(name = "chain_id", nullable = false)
     private Chain chain;
 
+
     @Column(name = "service_details", nullable = false)
     private String serviceDetails;
 

@@ -65,5 +65,4 @@ public class GroupService {
         group.setActive(false);
         groupRepository.save(group);
         }
-
 }

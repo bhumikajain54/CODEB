@@ -95,4 +95,5 @@ public class BrandController {
     public ResponseEntity<Long> getBrandCount() {
         return ResponseEntity.ok(brandService.getBrandCount());
     }
+
 }

@@ -127,6 +127,8 @@ public class User {
     private String resetToken;
     private LocalDateTime resetTokenExpiry;
 
+
+
     // Getters and setters for new password reset fields
     public String getResetToken() {
         return resetToken;

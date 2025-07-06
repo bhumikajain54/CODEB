@@ -135,4 +135,5 @@ public class BrandService {
     public long getBrandCount() {
         return brandRepository.countByIsActiveTrue();
     }
+    
 }
