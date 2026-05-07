@@ -6,8 +6,13 @@ const getApiUrl = () => {
     return process.env.REACT_APP_API_URL_LOCAL || 'http://localhost:8080/api';
   }
   
-  // Otherwise, use the production/server backend
-  return process.env.REACT_APP_API_URL_SERVER || process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+  // For production (Netlify or Railway-hosted)
+  // 1. Try REACT_APP_API_URL_SERVER (specific prod backend)
+  // 2. Try REACT_APP_API_URL (generic backend var)
+  // 3. Default to current domain + /api (works if served by backend)
+  return process.env.REACT_APP_API_URL_SERVER || 
+         process.env.REACT_APP_API_URL || 
+         `${window.location.origin}/api`;
 };
 
 export const API_URL = getApiUrl();
