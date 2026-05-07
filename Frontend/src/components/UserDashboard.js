@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../utils/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -32,7 +33,7 @@ const UserDashboard = () => {
   const fetchGroups = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/groups");
+      const response = await axios.get(`${API_URL}/groups`);
       const activeGroups = response.data.filter(group => group.active !== false);
       setGroups(activeGroups);
       setTotalGroups(activeGroups.length);
@@ -52,7 +53,7 @@ const UserDashboard = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:8080/api/groups", {
+      await axios.post(`${API_URL}/groups`, {
         groupName: newGroupName,
       });
 
@@ -76,7 +77,7 @@ const UserDashboard = () => {
       return;
     }
     try {
-      await axios.put(`http://localhost:8080/api/groups/${editGroupId}`, {
+      await axios.put(`${API_URL}/groups/${editGroupId}`, {
         groupName: editGroupName
       });
       setEditGroupId(null);
@@ -99,7 +100,7 @@ const UserDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      await axios.delete(`http://localhost:8080/api/groups/${groupId}`, config);
+      await axios.delete(`${API_URL}/groups/${groupId}`, config);
 
       setSuccess("Group deleted successfully!");
       fetchGroups();

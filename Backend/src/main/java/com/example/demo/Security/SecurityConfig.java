@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.config.Customizer;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +45,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Permit all OPTIONS requests (Preflight)
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Static resources and frontend routes
+                        .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/*.png", "/*.js", "/*.css", "/assets/**").permitAll()
                         
                         // Public authentication endpoints
                         .requestMatchers("/api/auth/**").permitAll()
@@ -81,6 +84,7 @@ public class SecurityConfig {
         if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
             List<String> origins = Arrays.stream(allowedOrigins.split(","))
                                          .map(String::trim)
+                                         .map(s -> s.endsWith("/") ? s.substring(0, s.length() - 1) : s)
                                          .filter(s -> !s.isEmpty())
                                          .toList();
             configuration.setAllowedOrigins(origins);

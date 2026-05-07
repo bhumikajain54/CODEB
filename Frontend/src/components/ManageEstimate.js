@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../utils/apiConfig";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -68,7 +69,7 @@ const ManageEstimates = () => {
   const [filteredBrands, setFilteredBrands] = useState([]);
   const [filteredZones, setFilteredZones] = useState([]);
 
-  const API_URL = "http://localhost:8080/api";
+
 
   useEffect(() => {
     fetchEstimates();

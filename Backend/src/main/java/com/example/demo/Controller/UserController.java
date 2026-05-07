@@ -265,6 +265,11 @@ public class UserController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok(Map.of("status", "UP", "message", "Auth controller is reachable"));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {

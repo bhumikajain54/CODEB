@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../utils/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faFileInvoice, 
@@ -17,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: API_URL,
   withCredentials: false,
   timeout: 10000,
   headers: {

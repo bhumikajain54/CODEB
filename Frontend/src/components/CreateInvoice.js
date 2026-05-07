@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faFileInvoice, 
@@ -62,7 +63,7 @@ const CreateInvoice = () => {
       setLoading(true);
       setError(null);
       const requestData = { estimateId: invoice.estimateId, emailId: invoice.emailId, amountPaid: parseFloat(invoice.amountPaid) || 0 };
-      const response = await axios.post("http://localhost:8080/api/invoices/generate", requestData);
+      const response = await axios.post(`${API_URL}/invoices/generate`, requestData);
       const invoiceId = response.data?.id || response.data?.invoiceId;
       setInvoiceCreated(true);
       setSuccess("Invoice generated successfully!");
@@ -70,7 +71,7 @@ const CreateInvoice = () => {
       if (invoiceId) {
         setTimeout(async () => {
           try {
-            const pdfRes = await axios.get(`http://localhost:8080/api/invoices/${invoiceId}/pdf`, { responseType: "blob" });
+            const pdfRes = await axios.get(`${API_URL}/invoices/${invoiceId}/pdf`, { responseType: "blob" });
             setPdfUrl(window.URL.createObjectURL(new Blob([pdfRes.data])));
           } catch (e) { setError("Invoice created, but PDF preview failed."); }
         }, 2000);

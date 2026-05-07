@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../utils/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faCopyright, 
@@ -32,7 +33,7 @@ const ManageBrands = () => {
   const [filterCompany, setFilterCompany] = useState("");
   const [filterGroup, setFilterGroup] = useState("");
 
-  const API_URL = "http://localhost:8080/api";
+
 
   useEffect(() => {
     fetchBrands();
