@@ -67,6 +67,13 @@ const AdminDashboard = () => {
     <div className="flex bg-slate-50 min-h-screen">
 <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center space-x-3 text-red-700 animate-in slide-in-from-top-2">
+              <span className="text-sm font-semibold">{error}</span>
+            </div>
+          )}
+
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>

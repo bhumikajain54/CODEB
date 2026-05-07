@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.Customizer;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -38,7 +39,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -46,20 +47,15 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         
                         // Public authentication endpoints
-                        .requestMatchers("/api/auth/login",
-                                "/api/auth/register",
-                                "/api/auth/verify",
-                                "/api/auth/forgot-password",
-                                "/api/auth/validate-reset-token",
-                                "/api/auth/reset-password").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
 
-                        // ALLOW ACCESS TO GROUPS API (ALL METHODS)
+                        // ALLOW ACCESS TO OTHER APIS
                         .requestMatchers("/api/groups/**").permitAll()
                         .requestMatchers("/api/chains/**").permitAll()
                         .requestMatchers("/api/brands/**").permitAll()
                         .requestMatchers("/api/zones/**").permitAll()
                         .requestMatchers("/api/estimates/**").permitAll()
-                        .requestMatchers("/api/invoices/**").permitAll() // Allow access
+                        .requestMatchers("/api/invoices/**").permitAll()
 
                         // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -75,15 +71,34 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @org.springframework.beans.factory.annotation.Value("${app.frontend.urls}")
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.urls:http://localhost:3000}")
     private String allowedOrigins;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        
+        if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
+            List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                                         .map(String::trim)
+                                         .filter(s -> !s.isEmpty())
+                                         .toList();
+            configuration.setAllowedOrigins(origins);
+        } else {
+            // Fallback to localhost if nothing is specified
+            configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        }
+        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization", 
+            "Content-Type", 
+            "X-Requested-With", 
+            "Accept", 
+            "Origin", 
+            "Access-Control-Request-Method", 
+            "Access-Control-Request-Headers"
+        ));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
