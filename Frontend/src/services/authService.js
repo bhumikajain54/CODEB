@@ -114,8 +114,10 @@
 //   return {};
 // };
 
+import { API_URL } from "../utils/apiConfig";
+
 export const register = async (userData) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
+  const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -142,7 +144,7 @@ export const register = async (userData) => {
 };
 
 export const verifyEmail = async (token) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/verify?token=${token}`, {
+  const response = await fetch(`${API_URL}/auth/verify?token=${token}`, {
     method: "GET",
   });
 
@@ -165,7 +167,7 @@ export const verifyEmail = async (token) => {
 };
 
 export const login = async (credentials) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -195,7 +197,7 @@ export const login = async (credentials) => {
 };
 
 export const forgotPassword = async (email) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/forgot-password`, {
+  const response = await fetch(`${API_URL}/auth/forgot-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -222,7 +224,7 @@ export const forgotPassword = async (email) => {
 };
 
 export const validateResetToken = async (token) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/validate-reset-token?token=${token}`, {
+  const response = await fetch(`${API_URL}/auth/validate-reset-token?token=${token}`, {
     method: "GET",
   });
 
@@ -235,7 +237,7 @@ export const validateResetToken = async (token) => {
 };
 
 export const resetPassword = async (token, newPassword) => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
+  const response = await fetch(`${API_URL}/auth/reset-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

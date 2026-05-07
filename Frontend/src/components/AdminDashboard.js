@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { authHeader } from "../services/authService";
+import { API_URL } from "../utils/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserShield,
@@ -25,7 +26,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/users`, {
+      const response = await fetch(`${API_URL}/admin/users`, {
         headers: {
           ...authHeader(),
           "Content-Type": "application/json",

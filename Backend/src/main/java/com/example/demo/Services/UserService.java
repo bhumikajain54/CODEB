@@ -1,102 +1,4 @@
-//package com.example.demo.Services;
-//
-//import java.util.Optional;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Service;
-//import com.example.demo.Entity.User;
-//import com.example.demo.Repository.UserRepository;
-//import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
-//import org.springframework.beans.factory.annotation.Value;
-//import java.util.UUID;
-//import java.util.regex.Pattern;
-//
-//@Service
-//public class UserService {
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
-//    private final JavaMailSender mailSender;
-//
-//    @Value("${app.frontend-url:http://localhost:3000}")
-//    private String frontendUrl;
-//
-//    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
-//        this.mailSender = mailSender;
-//    }
-//
-//    // Email validation method
-//    private boolean isValidEmail(String email) {
-//        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-//        Pattern pattern = Pattern.compile(emailRegex);
-//
-//        if (email == null) return false;
-//        return pattern.matcher(email).matches();
-//    }
-//
-//    // Generate email verification token
-//    private String generateVerificationToken() {
-//        return UUID.randomUUID().toString();
-//    }
-//
-//    // Send verification email with proper link
-//    private void sendVerificationEmail(User user, String verificationToken) {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(user.getEmail());
-//        message.setSubject("Email Verification");
-//        message.setText("Click the link to verify your email: " +
-//                frontendUrl + "/verify?token=" + verificationToken);
-//
-//        mailSender.send(message);
-//    }
-//
-//    public User registerUser(User user) {
-//        // Validate email
-//        if (!isValidEmail(user.getEmail())) {
-//            throw new IllegalArgumentException("Invalid email format");
-//        }
-//
-//        // Check if email already exists
-//        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-//            throw new IllegalArgumentException("Email already in use");
-//        }
-//
-//        // Generate verification token
-//        String verificationToken = generateVerificationToken();
-//        user.setVerificationToken(verificationToken);
-//        user.setEnabled(false); // User not enabled until verified
-//
-//        // Encode password
-//        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
-//
-//        // Save user
-//        User savedUser = userRepository.save(user);
-//
-//        // Send verification email
-//        sendVerificationEmail(savedUser, verificationToken);
-//
-//        return savedUser;
-//    }
-//
-//    public boolean verifyEmail(String token) {
-//        Optional<User> userOptional = userRepository.findByVerificationToken(token);
-//
-//        if (userOptional.isPresent()) {
-//            User user = userOptional.get();
-//            user.setEnabled(true);
-//            user.setVerificationToken(null);
-//            userRepository.save(user);
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//
-//    public Optional<User> findByEmail(String email) {
-//        return userRepository.findByEmail(email);
-//    }
-//}
+
 package com.example.demo.Services;
 
 import java.util.Optional;
@@ -117,7 +19,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    @Value("${frontend-url}")
+    @Value("${app.frontend.base-url}")
     private String frontendUrl;
 
     // Token expiration time in hours
@@ -134,7 +36,8 @@ public class UserService {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         Pattern pattern = Pattern.compile(emailRegex);
 
-        if (email == null) return false;
+        if (email == null)
+            return false;
         return pattern.matcher(email).matches();
     }
 
