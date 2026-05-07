@@ -93,7 +93,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/groups")
-@CrossOrigin(origins = "*") // Allow React frontend
+
 public class GroupController {
 
     @Autowired

@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/zones")
-@CrossOrigin(origins = "*")
+
 public class ZoneController {
 
     @Autowired

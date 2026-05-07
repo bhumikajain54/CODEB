@@ -55,7 +55,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/chains")
-@CrossOrigin("*")
+
 public class ChainController {
 
     private final ChainService chainService;
